@@ -1,16 +1,70 @@
-# React + Vite
+# TicketFlow Front
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=black)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
 
-Currently, two official plugins are available:
+Front-end do sistema **TicketFlow**, uma aplicação web para abertura e acompanhamento de chamados internos de TI.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Sobre o projeto
 
-## React Compiler
+O **TicketFlow** surgiu para resolver a falta de padronização na abertura de tickets de suporte, evitando perda de informações e tornando a triagem mais rápida e organizada.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+No front-end, a proposta é fornecer uma interface simples e funcional para:
 
-## Expanding the ESLint configuration
+- abertura de chamados por usuários comuns;
+- visualização e gerenciamento de tickets;
+- painel para técnicos acompanharem a fila;
+- exibição do status e prioridade dos chamados.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Contexto do sistema
+
+### Problema
+Em muitos cenários de help desk interno, os chamados são abertos sem padrão, com informações incompletas e sem organização adequada, o que gera lentidão no atendimento.
+
+### Solução
+Uma aplicação web com formulário padronizado para abertura de tickets e uma interface para acompanhamento e resolução dos chamados.
+
+## Arquitetura
+
+Este repositório representa apenas o **front-end** do sistema.
+
+A arquitetura geral do projeto foi pensada da seguinte forma:
+
+- **Front-end:** baseado em componentes;
+- **Back-end:** Python;
+- **Banco de dados:** MySQL;
+- **Modelo arquitetural:** Cliente-Servidor.
+
+## Tecnologias utilizadas
+
+- **Vite**
+- **React**
+- **JavaScript**
+- **CSS**
+
+## Funcionalidades previstas no front-end
+
+- [x] Estrutura inicial do projeto
+- [ ] Tela de abertura de chamado
+- [ ] Formulário padronizado de ticket
+- [ ] Listagem de chamados
+- [ ] Painel do técnico
+- [ ] Exibição de status do ticket
+- [ ] Indicadores visuais de SLA
+- [ ] Integração com a API do back-end
+
+## Como executar o projeto
+
+### Pré-requisitos
+- [Node.js](https://nodejs.org/)
+- npm ou yarn
+
+### Instalação
+
+```bash
+git clone https://github.com/joaosant05/TicketFlow-front.git
+cd TicketFlow-front
+npm install
+npm run dev
