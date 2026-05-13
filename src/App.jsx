@@ -1,0 +1,85 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; // <-- Importando rotas
+import Dashboard from "./pages/Dashboard";
+import Tickets from "./pages/Tickets"; // <-- Importando a página nova
+
+function App() {
+  const {
+    isLoading,
+    isAuthenticated,
+    error,
+    loginWithRedirect: login,
+    user,
+  } = useAuth0();
+
+  const signup = () => login({ authorizationParams: { screen_hint: "signup" } });
+
+  if (isLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg-app)' }}>
+        <h2 style={{ color: 'var(--color-text-secondary)' }}>Carregando TicketFlow...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Erro na autenticação: {error.message}</div>;
+  }
+
+  return isAuthenticated ? (
+    // SE LOGADO: O BrowserRouter assume o controle e roteia as páginas
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Dashboard user={user} />} />
+        <Route path="/tickets" element={<Tickets user={user} />} />
+        {/* Se tentar acessar uma URL que não existe, joga pro Dashboard */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  ) : (
+    // SE DESLOGADO: Mostra tela de login
+    <div style={{ 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      backgroundColor: 'var(--color-bg-app)' 
+    }}>
+      <h1 style={{ color: 'var(--color-text-primary)', marginBottom: '8px' }}>TicketFlow</h1>
+      <p style={{ color: 'var(--color-text-secondary)', marginBottom: '32px' }}>
+        Faça login para acessar a Fila de Atendimentos.
+      </p>
+      
+      <div style={{ display: 'flex', gap: '16px' }}>
+        <button 
+          onClick={login}
+          style={{
+            padding: '10px 24px',
+            backgroundColor: 'var(--color-brand-primary)',
+            color: 'white',
+            borderRadius: 'var(--radius-md)',
+            fontWeight: 'bold'
+          }}
+        >
+          Entrar no Sistema
+        </button>
+        <button 
+          onClick={signup}
+          style={{
+            padding: '10px 24px',
+            backgroundColor: 'var(--color-bg-card)',
+            color: 'var(--color-text-primary)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-md)',
+            fontWeight: 'bold'
+          }}
+        >
+          Criar Conta
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default App;

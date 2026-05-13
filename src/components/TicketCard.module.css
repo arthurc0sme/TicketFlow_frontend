@@ -1,0 +1,168 @@
+/* ============================================================
+   TicketCard.module.css
+   ============================================================ */
+
+.card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  cursor: pointer;
+  transition:
+    box-shadow var(--transition-base),
+    border-color var(--transition-base),
+    transform var(--transition-base);
+  outline: none;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: color-mix(in srgb, var(--color-brand-primary) 30%, var(--color-border));
+  transform: translateY(-1px);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--leading-snug);
+  /* Allow wrapping but cap at 2 lines with ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Priority Badge ───────────────────────────────────────── */
+.priorityBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Alta — red */
+.priority-high {
+  color: var(--color-status-high);
+  background-color: var(--color-status-high-bg);
+}
+
+/* Média — amber */
+.priority-medium {
+  color: var(--color-status-medium);
+  background-color: var(--color-status-medium-bg);
+}
+
+/* Baixa — green */
+.priority-low {
+  color: var(--color-status-low);
+  background-color: var(--color-status-low-bg);
+}
+
+/* Unknown fallback */
+.priority-unknown {
+  color: var(--color-text-tertiary);
+  background-color: var(--color-border-subtle);
+}
+
+/* ── Description ──────────────────────────────────────────── */
+.description {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-normal);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  /* Truncate at 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* ── SLA timestamp ────────────────────────────────────────── */
+.sla {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+.clockIcon {
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+/* ── Assignee avatar ──────────────────────────────────────── */
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #fff;
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+.responsavelName {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}

@@ -1,0 +1,237 @@
+/* ============================================================
+   Tickets.module.css
+   ============================================================ */
+
+/* ── Root layout ──────────────────────────────────────────── */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg-app);
+}
+
+/* ── Main content ─────────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: var(--space-8) var(--space-8) var(--space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ── Page header ──────────────────────────────────────────── */
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pageTitle {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+.pageSubtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-normal);
+  margin: 0;
+}
+
+/* ── Action bar ───────────────────────────────────────────── */
+.actionBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+/* ── Search field ─────────────────────────────────────────── */
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  /* Remove native search clear button */
+  -webkit-appearance: none;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* Remove the native "x" on search inputs (Chrome/Safari) */
+.searchInput::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* ── Filter icon divider ──────────────────────────────────── */
+.filterIcon {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-tertiary);
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+/* ── Select dropdowns ─────────────────────────────────────── */
+.selectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px var(--space-8) 6px var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-card);
+  cursor: pointer;
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  /* Min-width so labels don't collapse */
+  min-width: 148px;
+}
+
+.select:hover {
+  border-color: color-mix(in srgb, var(--color-brand-primary) 40%, var(--color-border));
+}
+
+.select:focus-visible {
+  border-color: var(--color-brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-primary) 15%, transparent);
+}
+
+/* Custom chevron overlaid on the right of the select */
+.selectChevron {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-tertiary);
+}
+
+/* ── Ticket grid ──────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+  align-items: start;   /* cards don't stretch to equal height */
+}
+
+/* Each TicketCard in grid mode keeps its own shadow / border */
+/* (no override needed — cards float individually on the gray bg) */
+
+/* ── Empty state ──────────────────────────────────────────── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+
+.emptyIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-tertiary);
+}
+
+/* Scale up the icon a bit inside the circle */
+.emptyIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.emptyTitle {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.emptyHint {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin: 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: var(--space-5) var(--space-4) var(--space-10);
+  }
+
+  .actionBar {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .searchWrap {
+    flex-basis: 100%;
+    order: -1;
+  }
+
+  .filterIcon {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .select {
+    min-width: 120px;
+  }
+}

@@ -1,0 +1,157 @@
+/* ============================================================
+   Dashboard.module.css
+   ============================================================ */
+
+/* ── Root layout: sidebar + main side-by-side ─────────────── */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg-app);
+}
+
+/* ── Main content area ────────────────────────────────────── */
+.main {
+  /* Push right so it clears the fixed sidebar */
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-width: 0;                   /* prevent flex blowout */
+  overflow-y: auto;
+  padding: var(--space-8) var(--space-8) var(--space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ── Page header ──────────────────────────────────────────── */
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pageTitle {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+.pageSubtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-normal);
+  margin: 0;
+}
+
+/* ── Stats row ────────────────────────────────────────────── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+/* Individual stat card */
+.statCard {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.statTrend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-trend-up);
+}
+
+.statValue {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+/* ── Ticket queue section ─────────────────────────────────── */
+.queueSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.queueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.queueTitle {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+.queueCount {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  font-weight: var(--weight-normal);
+}
+
+/* White container that wraps all ticket rows */
+.queueCard {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* Each TicketCard inside the queue gets flush edges + inner padding */
+.queueCard > div > * {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* Thin divider between ticket rows */
+.ticketDivider {
+  height: 1px;
+  background-color: var(--color-border-subtle);
+  margin: 0 var(--space-6);
+}
+
+/* ── Responsive: collapse to single-column stats on narrow viewports ── */
+@media (max-width: 900px) {
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: var(--space-5) var(--space-4) var(--space-10);
+  }
+}

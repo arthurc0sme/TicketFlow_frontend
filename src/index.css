@@ -1,0 +1,300 @@
+/* ── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Design Tokens ────────────────────────────────────────── */
+:root {
+  /* --- Layout Backgrounds --- */
+  --color-bg-app:          #F0F2F5;   /* ice-gray page background           */
+  --color-bg-sidebar:      #1B2A4A;   /* deep navy sidebar                  */
+  --color-bg-sidebar-hover:#243560;   /* sidebar item hover / active        */
+  --color-bg-card:         #FFFFFF;   /* white card surface                 */
+  --color-bg-badge:        #EEF2FF;   /* subtle tinted badge background     */
+
+  /* --- Brand / Accent --- */
+  --color-brand-primary:   #3B6FE8;   /* primary blue (logo, links, focus)  */
+  --color-brand-light:     #EEF3FF;   /* very light blue tint               */
+
+  /* --- Text --- */
+  --color-text-primary:    #111827;   /* near-black — headings, numbers     */
+  --color-text-secondary:  #6B7280;   /* medium gray — subtitles, meta      */
+  --color-text-tertiary:   #9CA3AF;   /* light gray — timestamps, hints     */
+  --color-text-on-dark:    #FFFFFF;   /* white text on sidebar              */
+  --color-text-on-dark-muted: #94A3B8;/* muted text on sidebar              */
+
+  /* --- Priority Status Colors --- */
+  --color-status-high:     #EF4444;   /* Alta  — red                        */
+  --color-status-high-bg:  #FEF2F2;   /* Alta  — red tint                   */
+  --color-status-medium:   #F59E0B;   /* Média — amber                      */
+  --color-status-medium-bg:#FFFBEB;   /* Média — amber tint                 */
+  --color-status-low:      #10B981;   /* Baixa — green                      */
+  --color-status-low-bg:   #ECFDF5;   /* Baixa — green tint                 */
+
+  /* --- Ticket Status Badge Colors --- */
+  --color-badge-created:        #6B7280;   /* Criado    — neutral gray       */
+  --color-badge-created-bg:     #F3F4F6;
+  --color-badge-reply:          #8B5CF6;   /* Resposta  — purple             */
+  --color-badge-reply-bg:       #F5F3FF;
+  --color-badge-analysis:       #3B6FE8;   /* Em Análise — brand blue        */
+  --color-badge-analysis-bg:    #EEF3FF;
+
+  /* --- Positive Trend / Growth Indicator --- */
+  --color-trend-up:        #10B981;   /* green arrow & percentage           */
+
+  /* --- Borders & Dividers --- */
+  --color-border:          #E5E7EB;   /* default card / section border      */
+  --color-border-subtle:   #F3F4F6;   /* very subtle inner divider          */
+
+  /* --- Shadows --- */
+  --shadow-card:   0 1px 3px 0 rgba(0, 0, 0, 0.07),
+                   0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 12px 0 rgba(0, 0, 0, 0.10);
+
+  /* --- Radius --- */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+  --radius-full: 9999px;
+
+  /* --- Spacing Scale (8px base) --- */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* --- Sidebar Dimensions --- */
+  --sidebar-width: 220px;
+
+  /* --- Typography --- */
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* Font Sizes (fluid-friendly, rem) */
+  --text-xs:   0.6875rem;  /* 11px — timestamps, meta              */
+  --text-sm:   0.8125rem;  /* 13px — badge labels, secondary text  */
+  --text-base: 0.9375rem;  /* 15px — body copy, ticket description */
+  --text-md:   1rem;       /* 16px — ticket titles                 */
+  --text-lg:   1.125rem;   /* 18px — section headings              */
+  --text-xl:   1.375rem;   /* 22px — page title                    */
+  --text-2xl:  1.875rem;   /* 30px — stat numbers (24, 156, 87%)   */
+  --text-3xl:  2.25rem;    /* 36px — hero numbers if needed        */
+
+  /* Font Weights */
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* Line Heights */
+  --leading-tight:  1.2;
+  --leading-snug:   1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed:1.65;
+
+  /* Letter Spacing */
+  --tracking-tight:  -0.02em;
+  --tracking-normal:  0em;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.08em;
+
+  /* --- Transitions --- */
+  --transition-fast:   120ms ease;
+  --transition-base:   200ms ease;
+  --transition-slow:   320ms ease;
+}
+
+/* ── Reset & Box Model ────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Root & Body ──────────────────────────────────────────── */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-app);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Typographic Scale ────────────────────────────────────── */
+
+/* Page title — "Dashboard" */
+h1 {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+/* Section headings — "Fila de Tickets" */
+h2 {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+/* Ticket title — "Erro no sistema de pagamento" */
+h3 {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+}
+
+h4, h5, h6 {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+}
+
+/* Body / description copy */
+p {
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+}
+
+/* Small meta — timestamps, sub-labels */
+small,
+.text-meta {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  color: var(--color-text-tertiary);
+  letter-spacing: var(--tracking-normal);
+}
+
+/* Stat numbers — "24", "156", "87%" */
+.text-stat {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+/* Stat label — "Pendentes", "Resolvidos" */
+.text-stat-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  letter-spacing: var(--tracking-normal);
+}
+
+/* Trend percentage — "↗ 12%" */
+.text-trend {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-trend-up);
+}
+
+/* ── Links ────────────────────────────────────────────────── */
+a {
+  color: var(--color-brand-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: color-mix(in srgb, var(--color-brand-primary) 80%, black);
+  text-decoration: underline;
+}
+
+/* ── Lists ────────────────────────────────────────────────── */
+ul, ol {
+  list-style: none;
+}
+
+/* ── Form Elements ────────────────────────────────────────── */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ── Focus Styles (accessibility) ────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* ── Scrollbar (subtle, on-brand) ────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* ── Selection ────────────────────────────────────────────── */
+::selection {
+  background-color: color-mix(in srgb, var(--color-brand-primary) 20%, transparent);
+  color: var(--color-text-primary);
+}
+
+/* ── Images & Media ───────────────────────────────────────── */
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ── Utility: Visually Hidden (a11y) ─────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

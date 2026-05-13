@@ -1,0 +1,76 @@
+/* ============================================================
+   StatusBadge.module.css
+   ============================================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+/* ── Sizes ────────────────────────────────────────────────── */
+.size-sm {
+  font-size: var(--text-xs);
+  padding: 3px 10px;
+}
+
+.size-md {
+  font-size: var(--text-sm);
+  padding: 5px 14px;
+}
+
+/* ── Variants ─────────────────────────────────────────────── */
+
+/* Criado — neutral gray */
+.created {
+  color: var(--color-badge-created);
+  background-color: var(--color-badge-created-bg);
+  border-color: var(--color-border);
+}
+
+/* Em Análise — brand blue */
+.analysis {
+  color: var(--color-badge-analysis);
+  background-color: var(--color-badge-analysis-bg);
+  border-color: color-mix(in srgb, var(--color-badge-analysis) 20%, transparent);
+}
+
+/* Resposta N — purple */
+.reply {
+  color: var(--color-badge-reply);
+  background-color: var(--color-badge-reply-bg);
+  border-color: color-mix(in srgb, var(--color-badge-reply) 20%, transparent);
+}
+
+/* Aguardando Cliente — amber */
+.waiting {
+  color: var(--color-status-medium);
+  background-color: var(--color-status-medium-bg);
+  border-color: color-mix(in srgb, var(--color-status-medium) 20%, transparent);
+}
+
+/* Resolvido — green */
+.resolved {
+  color: var(--color-status-low);
+  background-color: var(--color-status-low-bg);
+  border-color: color-mix(in srgb, var(--color-status-low) 20%, transparent);
+}
+
+/* Fechado — dark muted */
+.closed {
+  color: var(--color-text-tertiary);
+  background-color: var(--color-border-subtle);
+  border-color: var(--color-border);
+}
+
+/* Default fallback */
+.default {
+  color: var(--color-text-secondary);
+  background-color: var(--color-border-subtle);
+  border-color: var(--color-border);
+}
