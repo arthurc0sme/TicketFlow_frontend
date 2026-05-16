@@ -1,33 +1,114 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useNavigate, useLocation } from 'react-router-dom'; // <-- Injetado: Motor de rotas
 import styles from './Sidebar.module.css';
 
-/* ── Nav items ───────────────────────────────────────────── */
-const NAV_ITEMS = [
-  {
-    id: 'menu',
-    label: 'Menu',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-      </svg>
-    ),
-  },
-  {
-    id: 'tickets',
-    label: 'Tickets',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
-        <path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />
-      </svg>
-    ),
-  },
-];
+/* ── Icons ───────────────────────────────────────────────────
+   One inline SVG per nav item — zero external dependencies.
+   ────────────────────────────────────────────────────────── */
+
+/* Shared icon wrapper — keeps all SVGs on the same grid */
+function Icon({ children }) {
+  return (
+    <svg
+      width="17" height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+const Icons = {
+  /* Department tickets — inbox tray */
+  department: (
+    <Icon>
+      <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z" />
+    </Icon>
+  ),
+  /* No technician — user with question mark */
+  unassigned: (
+    <Icon>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7" />
+      <path d="M19 16v6" />
+      <path d="M22 19h-6" />
+    </Icon>
+  ),
+  /* My tickets — user circle */
+  mine: (
+    <Icon>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M6 20v-1a6 6 0 0 1 12 0v1" />
+    </Icon>
+  ),
+  /* Awaiting reply — clock with speech bubble */
+  waiting: (
+    <Icon>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="10" r="0.5" fill="currentColor" />
+      <circle cx="8"  cy="10" r="0.5" fill="currentColor" />
+      <circle cx="16" cy="10" r="0.5" fill="currentColor" />
+    </Icon>
+  ),
+  /* Resolved — circle check */
+  resolved: (
+    <Icon>
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="9 12 11 14 15 10" />
+    </Icon>
+  ),
+  /* Confirmed — double check / shield check */
+  confirmed: (
+    <Icon>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+      <polyline points="9 12 11 14 15 10" />
+    </Icon>
+  ),
+  /* Default dashboard grid (for non-tech 'Menu') */
+  menu: (
+    <Icon>
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
+    </Icon>
+  ),
+  /* Tickets generic */
+  tickets: (
+    <Icon>
+      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+      <path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />
+    </Icon>
+  ),
+};
+
+/* ── Nav item definitions per role ───────────────────────────
+   Each item: { id, label, icon }
+   ────────────────────────────────────────────────────────── */
+const NAV_ITEMS_BY_ROLE = {
+  /* Standard user / manager view */
+  default: [
+    { id: 'menu',    label: 'Menu',    icon: Icons.menu    },
+    { id: 'tickets', label: 'Tickets', icon: Icons.tickets },
+  ],
+
+  /* Technician queue view */
+  tech: [
+    { id: 'department', label: 'Tickets do Departamento', icon: Icons.department },
+    { id: 'unassigned', label: 'Sem Técnico',             icon: Icons.unassigned },
+    { id: 'mine',       label: 'Meus Tickets',            icon: Icons.mine       },
+    { id: 'waiting',    label: 'Aguardando Resposta',      icon: Icons.waiting    },
+    { id: 'resolved',   label: 'Resolvidos',              icon: Icons.resolved   },
+    { id: 'confirmed',  label: 'Confirmados',             icon: Icons.confirmed  },
+  ],
+};
 
 /* ── Popover icons ───────────────────────────────────────── */
 function IconSettings() {
@@ -57,23 +138,39 @@ function IconLogout() {
   );
 }
 
-/* ── Avatar initials helper ──────────────────────────────── */
+/* ── Avatar initials ─────────────────────────────────────── */
 function getInitials(email = '') {
   return email.charAt(0).toUpperCase() || 'U';
 }
 
 /* ─────────────────────────────────────────────────────────── */
 
-export default function Sidebar({ userEmail = 'demo@demo.com.br' }) {
+/**
+ * Sidebar
+ *
+ * Props:
+ *   activeItem  {string}              — id of the currently active nav item
+ *   onNavigate  {function}            — called with item id on nav click
+ *   userEmail   {string}              — displayed in the footer trigger
+ *   userRole    {'tech'|'default'}    — controls which nav items are shown
+ *                                       (temporary prop, will come from auth context later)
+ */
+export default function Sidebar({
+  activeItem  = 'department',
+  onNavigate,
+  userEmail   = 'demo@demo.com.br',
+  userRole    = 'tech',
+}) {
   const { logout } = useAuth0();
-  const navigate = useNavigate(); // <-- Injetado: Hook para navegar
-  const location = useLocation(); // <-- Injetado: Lê a URL atual
-
   const [popoverOpen, setPopoverOpen] = useState(false);
+
   const popoverRef = useRef(null);
   const triggerRef = useRef(null);
 
-  /* ── Click-outside + Escape to close ─────────────────────── */
+  /* Resolve nav items for this role; fall back to default */
+  const navItems = NAV_ITEMS_BY_ROLE[userRole] ?? NAV_ITEMS_BY_ROLE.default;
+
+  /* ── Click-outside + Escape ───────────────────────────────── */
   useEffect(() => {
     if (!popoverOpen) return;
 
@@ -116,19 +213,17 @@ export default function Sidebar({ userEmail = 'demo@demo.com.br' }) {
       {/* ── Navigation ── */}
       <nav className={styles.nav} aria-label="Navegação principal">
         <ul className={styles.navList}>
-          {NAV_ITEMS.map((item) => {
-            // Lógica de Roteamento Dinâmico
-            const itemPath = item.id === 'menu' ? '/' : `/${item.id}`;
-            const isActive = location.pathname === itemPath;
-
+          {navItems.map((item) => {
+            const isActive = activeItem === item.id;
             return (
               <li key={item.id}>
                 <button
                   className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-                  onClick={() => navigate(itemPath)} // <-- Muda a URL!
+                  onClick={() => onNavigate?.(item.id)}
                   aria-current={isActive ? 'page' : undefined}
+                  title={item.label}
                 >
-                  <span className={styles.navIcon} aria-hidden="true">{item.icon}</span>
+                  <span className={styles.navIcon}>{item.icon}</span>
                   <span className={styles.navLabel}>{item.label}</span>
                 </button>
               </li>
@@ -137,7 +232,7 @@ export default function Sidebar({ userEmail = 'demo@demo.com.br' }) {
         </ul>
       </nav>
 
-      {/* ── Footer area: popover + trigger ── */}
+      {/* ── Footer: popover + user trigger ── */}
       <div className={styles.footerWrap}>
         {popoverOpen && (
           <div
@@ -146,15 +241,26 @@ export default function Sidebar({ userEmail = 'demo@demo.com.br' }) {
             role="menu"
             aria-label="Opções do usuário"
           >
-            <button className={styles.popoverItem} role="menuitem" onClick={() => setPopoverOpen(false)}>
+            <button
+              className={styles.popoverItem}
+              role="menuitem"
+              onClick={() => setPopoverOpen(false)}
+            >
               <span className={styles.popoverIcon}><IconSettings /></span>
               Configurações
             </button>
-            <button className={styles.popoverItem} role="menuitem" onClick={() => setPopoverOpen(false)}>
+
+            <button
+              className={styles.popoverItem}
+              role="menuitem"
+              onClick={() => setPopoverOpen(false)}
+            >
               <span className={styles.popoverIcon}><IconMoon /></span>
               Tema
             </button>
+
             <div className={styles.popoverDivider} aria-hidden="true" />
+
             <button
               className={`${styles.popoverItem} ${styles.popoverItemDanger}`}
               role="menuitem"
@@ -166,7 +272,6 @@ export default function Sidebar({ userEmail = 'demo@demo.com.br' }) {
           </div>
         )}
 
-        {/* User trigger button */}
         <button
           ref={triggerRef}
           className={`${styles.userTrigger} ${popoverOpen ? styles.userTriggerActive : ''}`}

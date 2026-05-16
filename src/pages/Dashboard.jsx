@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import Sidebar from '../components/Sidebar';
 import TicketCard from '../components/TicketCard';
-import TicketModal from '../components/TicketModal'; // <-- 1. Importando o Modal
 import styles from './Dashboard.module.css';
 
 /* ── Mock data ─────────────────────────────────────────────── */
@@ -73,10 +73,7 @@ function StatCard({ label, value, trend }) {
 
 export default function Dashboard({ user }) {
   const [tickets] = useState(MOCK_TICKETS);
-  const [activePage, setActivePage] = useState('menu');
-  
-  // 2. Criando o estado que guarda o ticket clicado (null = modal fechado)
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const navigate = useNavigate();
 
   const pendentes  = tickets.filter((t) => t.status !== 'Resolvido' && t.status !== 'Fechado').length;
   const resolvidos = 156;
@@ -84,10 +81,12 @@ export default function Dashboard({ user }) {
 
   return (
     <div className={styles.layout}>
+      {/* ── Fixed sidebar ── */}
       <Sidebar
-        activeItem={activePage}
-        onNavigate={setActivePage}
+        activeItem="dashboard"
+        onNavigate={(page) => navigate('/tickets')} 
         userEmail={user?.email}
+        userRole="tech"
       />
 
       <main className={styles.main}>
@@ -121,8 +120,7 @@ export default function Dashboard({ user }) {
                   statusAtual={ticket.status}
                   tempoRestanteSLA={ticket.tempoRestanteSLA}
                   responsavel={ticket.responsavel}
-                  // 3. Ao clicar no card, joga o ticket para o estado
-                  onClick={() => setSelectedTicket(ticket)}
+                  onClick={() => navigate(`/ticket/${ticket.id}`)}
                 />
                 {index < tickets.length - 1 && (
                   <div className={styles.ticketDivider} aria-hidden="true" />
@@ -132,12 +130,6 @@ export default function Dashboard({ user }) {
           </div>
         </section>
       </main>
-
-      {/* 4. Renderizando o Modal por cima de tudo */}
-      <TicketModal 
-        ticket={selectedTicket} 
-        onClose={() => setSelectedTicket(null)} 
-      />
     </div>
   );
 }

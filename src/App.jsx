@@ -1,7 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; // <-- Importando rotas
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
-import Tickets from "./pages/Tickets"; // <-- Importando a página nova
+import Tickets from "./pages/Tickets";
+import TicketDetails from "./pages/TicketDetails"; // <-- 1. Adicione esta linha no topo
 
 function App() {
   const {
@@ -27,17 +28,18 @@ function App() {
   }
 
   return isAuthenticated ? (
-    // SE LOGADO: O BrowserRouter assume o controle e roteia as páginas
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Dashboard user={user} />} />
         <Route path="/tickets" element={<Tickets user={user} />} />
-        {/* Se tentar acessar uma URL que não existe, joga pro Dashboard */}
+        
+        {/* <-- 2. Adicione a rota do TicketDetails aqui */}
+        <Route path="/ticket/:id" element={<TicketDetails user={user} />} /> 
+        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   ) : (
-    // SE DESLOGADO: Mostra tela de login
     <div style={{ 
       height: '100vh', 
       display: 'flex', 

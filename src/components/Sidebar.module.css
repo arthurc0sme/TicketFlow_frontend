@@ -4,6 +4,11 @@
 
 /* ── Sidebar shell ────────────────────────────────────────── */
 .sidebar {
+  /*
+    Tech queue labels like "Tickets do Departamento" are longer
+    than the original two items. We widen the sidebar slightly
+    so labels never wrap or truncate.
+  */
   width: var(--sidebar-width);
   min-height: 100vh;
   background-color: var(--color-bg-sidebar);
@@ -15,6 +20,8 @@
   left: 0;
   bottom: 0;
   z-index: 100;
+  /* Widen to fit longer queue labels */
+  --sidebar-width: 220px;
 }
 
 /* ── Logo ─────────────────────────────────────────────────── */
@@ -36,12 +43,20 @@
 .nav {
   flex: 1;
   padding: 0 var(--space-3);
+  overflow-y: auto;
+  /* subtle scrollbar if queues overflow on short viewports */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
+
+.nav::-webkit-scrollbar { width: 4px; }
+.nav::-webkit-scrollbar-track { background: transparent; }
+.nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
 
 .navList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2px;
 }
 
 .navItem {
@@ -49,7 +64,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
+  padding: 9px var(--space-3);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
@@ -60,6 +75,10 @@
   transition:
     background-color var(--transition-fast),
     color var(--transition-fast);
+  /* Prevent label wrapping — sidebar width handles it */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navItem:hover {
@@ -72,28 +91,35 @@
   color: var(--color-text-on-dark);
 }
 
+.navItem:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: -2px;
+}
+
 .navIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  flex-shrink: 0;          /* icon never shrinks */
+  width: 17px;
+  height: 17px;
   color: inherit;
 }
 
 .navLabel {
   line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ── Footer wrapper — positions popover above trigger ─────── */
+/* ── Footer wrapper ───────────────────────────────────────── */
 .footerWrap {
   margin-top: auto;
-  position: relative;           /* popover is absolute to this */
+  position: relative;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* ── User trigger button ──────────────────────────────────── */
+/* ── User trigger ─────────────────────────────────────────── */
 .userTrigger {
   width: 100%;
   display: flex;
@@ -103,9 +129,7 @@
   background: transparent;
   cursor: pointer;
   text-align: left;
-  border-radius: 0;
-  transition:
-    background-color var(--transition-fast);
+  transition: background-color var(--transition-fast);
 }
 
 .userTrigger:hover,
@@ -134,7 +158,6 @@
   letter-spacing: 0;
 }
 
-/* ── Email label ──────────────────────────────────────────── */
 .userEmail {
   font-size: var(--text-xs);
   color: var(--color-text-on-dark-muted);
@@ -143,10 +166,10 @@
   text-overflow: ellipsis;
 }
 
-/* ── Popover menu ─────────────────────────────────────────── */
+/* ── Popover ──────────────────────────────────────────────── */
 .popover {
   position: absolute;
-  bottom: calc(100% + var(--space-2));   /* float above the trigger */
+  bottom: calc(100% + var(--space-2));
   left: var(--space-3);
   right: var(--space-3);
   background-color: #ffffff;
@@ -154,27 +177,18 @@
   border-radius: var(--radius-md);
   box-shadow:
     0 4px 24px -4px rgba(15, 23, 42, 0.18),
-    0 2px 8px -2px  rgba(15, 23, 42, 0.10);
+    0 2px 8px  -2px rgba(15, 23, 42, 0.10);
   padding: var(--space-2) 0;
   z-index: 200;
-
-  /* Pop in from below */
-  animation: popoverIn 140ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: bottom center;
+  animation: popoverIn 140ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes popoverIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  from { opacity: 0; transform: scale(0.95) translateY(6px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);   }
 }
 
-/* ── Popover items ────────────────────────────────────────── */
 .popoverItem {
   width: 100%;
   display: flex;
@@ -203,7 +217,6 @@
   outline-offset: -2px;
 }
 
-/* Danger variant — Sair */
 .popoverItemDanger {
   color: var(--color-status-high);
 }
@@ -213,7 +226,6 @@
   color: var(--color-status-high);
 }
 
-/* Icon slot */
 .popoverIcon {
   display: flex;
   align-items: center;
@@ -224,7 +236,6 @@
   color: inherit;
 }
 
-/* ── Divider between normal items and Sair ────────────────── */
 .popoverDivider {
   height: 1px;
   background-color: var(--color-border);

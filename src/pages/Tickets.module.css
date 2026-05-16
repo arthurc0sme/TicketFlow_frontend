@@ -43,6 +43,14 @@
   margin: 0;
 }
 
+/* ── Result count ─────────────────────────────────────────── */
+.resultCount {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-tertiary);
+  margin: calc(var(--space-2) * -1) 0 0;   /* tighten gap above grid */
+}
+
 /* ── Action bar ───────────────────────────────────────────── */
 .actionBar {
   display: flex;
@@ -55,7 +63,7 @@
   box-shadow: var(--shadow-card);
 }
 
-/* ── Search field ─────────────────────────────────────────── */
+/* ── Search ───────────────────────────────────────────────── */
 .searchWrap {
   display: flex;
   align-items: center;
@@ -80,7 +88,6 @@
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--color-text-primary);
-  /* Remove native search clear button */
   -webkit-appearance: none;
 }
 
@@ -88,7 +95,6 @@
   color: var(--color-text-tertiary);
 }
 
-/* Remove the native "x" on search inputs (Chrome/Safari) */
 .searchInput::-webkit-search-cancel-button {
   -webkit-appearance: none;
 }
@@ -124,11 +130,10 @@
   background-color: var(--color-bg-card);
   cursor: pointer;
   outline: none;
+  min-width: 148px;
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);
-  /* Min-width so labels don't collapse */
-  min-width: 148px;
 }
 
 .select:hover {
@@ -140,7 +145,6 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-primary) 15%, transparent);
 }
 
-/* Custom chevron overlaid on the right of the select */
 .selectChevron {
   position: absolute;
   right: var(--space-3);
@@ -152,16 +156,13 @@
   color: var(--color-text-tertiary);
 }
 
-/* ── Ticket grid ──────────────────────────────────────────── */
+/* ── Ticket grid: 2-col floating cards ────────────────────── */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-5);
-  align-items: start;   /* cards don't stretch to equal height */
+  align-items: start;
 }
-
-/* Each TicketCard in grid mode keeps its own shadow / border */
-/* (no override needed — cards float individually on the gray bg) */
 
 /* ── Empty state ──────────────────────────────────────────── */
 .emptyState {
@@ -185,7 +186,6 @@
   color: var(--color-text-tertiary);
 }
 
-/* Scale up the icon a bit inside the circle */
 .emptyIcon svg {
   width: 22px;
   height: 22px;
