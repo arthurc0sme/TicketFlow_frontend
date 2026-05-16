@@ -49,10 +49,10 @@ A arquitetura geral do projeto foi pensada da seguinte forma:
 - [x] Estrutura inicial do projeto
 - [ ] Tela de abertura de chamado
 - [ ] Formulário padronizado de ticket
-- [ ] Listagem de chamados
-- [ ] Painel do técnico
-- [ ] Exibição de status do ticket
-- [ ] Indicadores visuais de SLA
+- [x] Listagem de chamados
+- [x] Painel do técnico
+- [x] Exibição de status do ticket
+- [x] Indicadores visuais de SLA
 - [ ] Integração com a API do back-end
 
 ## Como executar o projeto
