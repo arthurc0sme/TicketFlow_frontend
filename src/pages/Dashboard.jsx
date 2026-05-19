@@ -10,41 +10,41 @@ const MOCK_TICKETS = [
     id: 1,
     protocolo: 1,
     titulo: 'Erro no sistema de pagamento',
-    descricao: 'Usuários relatando falha ao processar pagamentos via cartão de crédito...',
-    status: 'Criado',
+    descricao: 'Usuários relatando falha ao processar pagamentos via cartão de crédito. O erro ocorre após inserir os dados do cartão e clicar em finalizar compra.',
+    status: 'Em análise',
     idCategoria: 1,
     tempoRestanteSLA: '2h atrás',
-    responsavel: null,
-  },
-  {
-    id: 2,
-    protocolo: 2,
-    titulo: 'Layout quebrado no mobile',
-    descricao: 'Interface não está responsiva em dispositivos iOS Safari...',
-    status: 'Resposta 1',
-    idCategoria: 3,
-    tempoRestanteSLA: '5h atrás',
-    responsavel: null,
-  },
-  {
-    id: 3,
-    protocolo: 3,
-    titulo: 'Solicitação de nova feature',
-    descricao: 'Cliente solicitou integração com API do WhatsApp Business...',
-    status: 'Em Análise',
-    idCategoria: 5,
-    tempoRestanteSLA: '1d atrás',
-    responsavel: null,
+    responsavel: 'João Santos',
   },
   {
     id: 4,
     protocolo: 4,
     titulo: 'Performance lenta no dashboard',
-    descricao: 'Carregamento dos gráficos está demorando mais de 10 segundos...',
+    descricao: 'Carregamento dos gráficos está demorando mais de 10 segundos. Afeta principalmente usuários com muitos dados históricos.',
     status: 'Criado',
     idCategoria: 1,
     tempoRestanteSLA: '3h atrás',
     responsavel: null,
+  },
+  {
+    id: 7,
+    protocolo: 7,
+    titulo: 'Atualização de segurança necessária',
+    descricao: 'Biblioteca de autenticação precisa ser atualizada devido à vulnerabilidade CVE-2026-1234.',
+    status: 'Em Análise',
+    idCategoria: 1,
+    tempoRestanteSLA: '1d atrás',
+    responsavel: 'Arthur Cosme',
+  },
+  {
+    id: 11,
+    protocolo: 11,
+    titulo: 'Erro 500 na API de relatórios',
+    descricao: 'Endpoint /api/relatorios retorna 500 quando o período selecionado é superior a 90 dias.',
+    status: 'Criado',
+    idCategoria: 1,
+    tempoRestanteSLA: '1h atrás',
+    responsavel: 'João Santos',
   },
 ];
 
@@ -92,7 +92,7 @@ export default function Dashboard({ user }) {
       <main className={styles.main}>
         <header className={styles.pageHeader}>
           <h1 className={styles.pageTitle}>Dashboard</h1>
-          <p className={styles.pageSubtitle}>Visão geral do sistema de tickets</p>
+          <p className={styles.pageSubtitle}>Dados e métricas</p>
         </header>
 
         <section className={styles.statsRow} aria-label="Estatísticas gerais">
@@ -103,7 +103,7 @@ export default function Dashboard({ user }) {
 
         <section className={styles.queueSection} aria-label="Fila de tickets">
           <div className={styles.queueHeader}>
-            <h2 className={styles.queueTitle}>Fila de Tickets</h2>
+            <h2 className={styles.queueTitle}>Tickets Urgentes (Alta prioridade)</h2>
             <span className={styles.queueCount}>
               {tickets.length} ticket{tickets.length !== 1 ? 's' : ''} ativos
             </span>

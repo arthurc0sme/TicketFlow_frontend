@@ -4,11 +4,8 @@ import Sidebar from '../components/Sidebar';
 import StatusBadge from '../components/StatusBadge';
 import styles from './TicketDetails.module.css';
 
-/* ══════════════════════════════════════════════════════════════
-   MOCK DATA
-   In production, replace with a real fetch(`/api/tickets/${id}`)
-   ══════════════════════════════════════════════════════════════ */
-const MOCK_TICKETS_DB = {
+// simulando a resposta da api enquanto o backend nao ta integrado pra pagina renderizar
+const MOCK_CHAMADOS_BD = {
   1: {
     id: 1, protocolo: 1, ano: 2026,
     titulo: 'Erro no sistema de pagamento',
@@ -17,15 +14,18 @@ const MOCK_TICKETS_DB = {
     responsavel: 'João Santos', solicitante: 'Maria Silva',
     departamento: 'Financeiro',
     criadoEm: '2026-04-13T14:30:00',
-    slaTipo: 'TPR (Tempo de Primeira Resposta)',
-    /* SLA deadline as ISO string — set to ~3.75h from a fixed reference
-       so the countdown demo is always meaningful regardless of when you open it */
-    slaDeadline: (() => { const d = new Date(); d.setSeconds(d.getSeconds() + 13500); return d.toISOString(); })(),
+    slaTipo: 'TA - Tempo de Atualização',
+    // calculo isolado pra garantir que o deadline de sla seja gerado sempre no futuro pra tela sempre demonstrar valores corretos na apresentacao
+    slaDeadline: (() => { const d = new Date(); d.setSeconds(d.getSeconds() + 1800); return d.toISOString(); })(),
+    anexos: [
+      { name: 'print_erro_checkout.png', size: '1.2 MB', type: 'PNG' },
+      { name: 'log_console_navegador.txt', size: '15 KB', type: 'TXT' }
+    ],
     history: [
-      { id: 'h1', type: 'created',  title: 'Ticket criado',                    tags: ['criado'],                        actor: null,          timestamp: '2026-04-13 14:30' },
-      { id: 'h2', type: 'assigned', title: 'Ticket atribuído para @João Santos', tags: [],                               actor: 'Maria Silva', timestamp: '2026-04-13 14:35' },
-      { id: 'h3', type: 'status',   title: 'Status alterado',                   tags: ['criado', 'em_analise'],          actor: 'João Santos', timestamp: '2026-04-13 14:36', statusArrow: true },
-      { id: 'h4', type: 'comment',  title: 'Comentário adicionado',             tags: [],                               actor: 'João Santos', timestamp: '2026-04-13 15:02', note: 'Reproduzi o erro em ambiente de staging. Aguardando acesso ao log do gateway.' },
+      { id: 'h1', type: 'created',  title: 'Ticket criado', tags: ['criado'], actor: 'Maria Silva', timestamp: '2026-04-13 14:30', note: 'Usuários relatando falha ao processar pagamentos via cartão de crédito. O erro ocorre após inserir os dados do cartão e clicar em finalizar compra.' },
+      { id: 'h2', type: 'assigned', title: 'Ticket atribuído para @João Santos', tags: [], actor: 'Sistema', timestamp: '2026-04-13 14:35' },
+      { id: 'h3', type: 'status',   title: 'Status alterado', tags: ['criado', 'em_analise'], actor: 'João Santos', timestamp: '2026-04-13 14:36', statusArrow: true },
+      { id: 'h4', type: 'comment',  title: 'Comentário adicionado', tags: [], actor: 'João Santos', timestamp: '2026-04-13 15:02', note: 'Reproduzi o erro em ambiente de staging. Aguardando acesso ao log do gateway.' },
     ],
   },
   2: {
@@ -38,6 +38,7 @@ const MOCK_TICKETS_DB = {
     criadoEm: '2026-04-13T09:00:00',
     slaTipo: 'TA (Tempo de Atualização)',
     slaDeadline: (() => { const d = new Date(); d.setSeconds(d.getSeconds() + 1800); return d.toISOString(); })(),
+    anexos: [],
     history: [
       { id: 'h1', type: 'created',  title: 'Ticket criado',       tags: ['criado'],    actor: null,         timestamp: '2026-04-13 09:00' },
       { id: 'h2', type: 'assigned', title: 'Atribuído para @Ana Costa', tags: [],      actor: 'Pedro Lima', timestamp: '2026-04-13 09:15' },
@@ -45,8 +46,7 @@ const MOCK_TICKETS_DB = {
   },
 };
 
-/* Default fallback for unknown IDs */
-const FALLBACK_TICKET = {
+const CHAMADO_FALLBACK = {
   id: 0, protocolo: 0, ano: 2026,
   titulo: 'Ticket não encontrado',
   descricao: 'Este chamado não existe ou foi removido.',
@@ -54,13 +54,11 @@ const FALLBACK_TICKET = {
   responsavel: '—', solicitante: '—', departamento: '—',
   criadoEm: new Date().toISOString(),
   slaDeadline: new Date().toISOString(),
+  anexos: [],
   history: [],
 };
 
-/* ══════════════════════════════════════════════════════════════
-   PRIORITY MAP  (idCategoria → label + variant)
-   ══════════════════════════════════════════════════════════════ */
-const PRIORITY_MAP = {
+const MAPA_PRIORIDADES = {
   1: { label: 'Alta',  variant: 'high'   },
   2: { label: 'Alta',  variant: 'high'   },
   3: { label: 'Média', variant: 'medium' },
@@ -70,9 +68,6 @@ const PRIORITY_MAP = {
   7: { label: 'Baixa', variant: 'low'    },
 };
 
-/* ══════════════════════════════════════════════════════════════
-   ICONS — all inline SVG, zero deps
-   ══════════════════════════════════════════════════════════════ */
 function Svg({ size = 16, children, ...rest }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -83,38 +78,24 @@ function Svg({ size = 16, children, ...rest }) {
   );
 }
 
-const IconArrowLeft = () => (
-  <Svg size={16}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></Svg>
-);
-const IconClock = () => (
-  <Svg size={14}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></Svg>
-);
-const IconUser = () => (
-  <Svg size={14}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></Svg>
-);
-const IconTag = () => (
-  <Svg size={14}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></Svg>
-);
-const IconBuilding = () => (
-  <Svg size={14}><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="22" x2="9" y2="12"/><line x1="15" y1="22" x2="15" y2="12"/><rect x="9" y="7" width="2" height="2"/><rect x="13" y="7" width="2" height="2"/><rect x="9" y="12" width="6" height="10"/></Svg>
-);
-const IconHash = () => (
-  <Svg size={14}><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></Svg>
-);
-const IconCalendar = () => (
-  <Svg size={14}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></Svg>
-);
-const IconSend = () => (
-  <Svg size={15} strokeWidth="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></Svg>
-);
-const IconLock = () => (
-  <Svg size={15}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></Svg>
-);
-const IconGlobe = () => (
-  <Svg size={15}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></Svg>
-);
+const IconArrowLeft = () => <Svg size={16}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></Svg>;
+const IconClock = () => <Svg size={14}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></Svg>;
+const IconUser = () => <Svg size={14}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></Svg>;
+const IconTag = () => <Svg size={14}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></Svg>;
+const IconBuilding = () => <Svg size={14}><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="22" x2="9" y2="12"/><line x1="15" y1="22" x2="15" y2="12"/><rect x="9" y="7" width="2" height="2"/><rect x="13" y="7" width="2" height="2"/><rect x="9" y="12" width="6" height="10"/></Svg>;
+const IconHash = () => <Svg size={14}><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></Svg>;
+const IconCalendar = () => <Svg size={14}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></Svg>;
+const IconSend = () => <Svg size={15} strokeWidth="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></Svg>;
+const IconLock = () => <Svg size={15}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></Svg>;
+const IconGlobe = () => <Svg size={15}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></Svg>;
 
-/* Timeline icons per event type */
+// Novos ícones
+const IconFileImage = () => <Svg size={20} strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></Svg>;
+const IconFileText = () => <Svg size={20} strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></Svg>;
+const IconDownload = () => <Svg size={15} strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></Svg>;
+const IconMail = () => <Svg size={15} strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></Svg>;
+const IconClip = () => <Svg size={15} strokeWidth="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" /></Svg>;
+
 function TimelineIcon({ type }) {
   if (type === 'created')  return <Svg size={15}><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></Svg>;
   if (type === 'assigned') return <Svg size={15}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></Svg>;
@@ -123,54 +104,44 @@ function TimelineIcon({ type }) {
   return null;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SLA COUNTDOWN HOOK
-   Returns { hours, minutes, seconds, urgency }
-   urgency: 'ok' | 'warning' (≤ 1h) | 'critical' (≤ 15m or expired)
-   ══════════════════════════════════════════════════════════════ */
-function useSlaCountdown(deadlineIso) {
-  const getRemaining = useCallback(() => {
-    const diff = Math.max(0, new Date(deadlineIso) - Date.now());
-    const totalSeconds = Math.floor(diff / 1000);
+// hook customizado pra calcular a regressiva do sla em tempo real
+function usarCronometroSla(prazoIso) {
+  const calcularRestante = useCallback(() => {
+    const diferenca = Math.max(0, new Date(prazoIso) - Date.now());
+    const totalSegundos = Math.floor(diferenca / 1000);
     return {
-      hours:   Math.floor(totalSeconds / 3600),
-      minutes: Math.floor((totalSeconds % 3600) / 60),
-      seconds: totalSeconds % 60,
-      total:   totalSeconds,
-      expired: diff <= 0,
+      horas:   Math.floor(totalSegundos / 3600),
+      minutos: Math.floor((totalSegundos % 3600) / 60),
+      segundos: totalSegundos % 60,
+      total:   totalSegundos,
+      expirado: diferenca <= 0,
     };
-  }, [deadlineIso]);
+  }, [prazoIso]);
 
-  const [remaining, setRemaining] = useState(getRemaining);
+  const [restante, setRestante] = useState(calcularRestante);
 
   useEffect(() => {
-    const id = setInterval(() => setRemaining(getRemaining()), 1000);
+    const id = setInterval(() => setRestante(calcularRestante()), 1000);
     return () => clearInterval(id);
-  }, [getRemaining]);
+  }, [calcularRestante]);
 
-  const urgency =
-    remaining.expired || remaining.total <= 900  ? 'critical' :  // ≤ 15 min
-    remaining.total   <= 3600                    ? 'warning'  :  // ≤ 1 h
+  const urgencia =
+    restante.expirado || restante.total <= 900  ? 'critical' :  
+    restante.total    <= 3600                   ? 'warning'  :  
     'ok';
 
-  return { ...remaining, urgency };
+  return { ...restante, urgencia };
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SUB-COMPONENTS
-   ══════════════════════════════════════════════════════════════ */
-
-/* ── Priority badge ─────────────────────────────────────── */
 function PriorityBadge({ idCategoria }) {
-  const p = PRIORITY_MAP[Number(idCategoria)] ?? { label: '—', variant: 'unknown' };
+  const prioridade = MAPA_PRIORIDADES[Number(idCategoria)] ?? { label: '—', variant: 'unknown' };
   return (
-    <span className={`${styles.priorityBadge} ${styles[`priority-${p.variant}`]}`}>
-      {p.label}
+    <span className={`${styles.priorityBadge} ${styles[`priority-${prioridade.variant}`]}`}>
+      {prioridade.label}
     </span>
   );
 }
 
-/* ── Metadata row (icon + label + value) ─────────────────── */
 function MetaRow({ icon, label, children }) {
   return (
     <div className={styles.metaRow}>
@@ -181,57 +152,51 @@ function MetaRow({ icon, label, children }) {
   );
 }
 
-/* ── SLA Card ────────────────────────────────────────────── */
 function SlaCard({ slaDeadline, slaTipo, label = 'SLA de Atualização' }) {
-  const { hours, minutes, seconds, urgency, expired } = useSlaCountdown(slaDeadline);
+  const { horas, minutos, segundos, urgencia, expirado } = usarCronometroSla(slaDeadline);
 
-  const pad = (n) => String(n).padStart(2, '0');
+  const formatarNumero = (n) => String(n).padStart(2, '0');
 
   return (
-    <div className={`${styles.slaCard} ${styles[`sla-${urgency}`]}`}>
+    <div className={`${styles.slaCard} ${styles[`sla-${urgencia}`]}`}>
       <p className={styles.slaLabel}>{label}</p>
 
-      {expired ? (
-        <p className={`${styles.slaTime} ${styles[`slaTime-${urgency}`]}`}>
+      {expirado ? (
+        <p className={`${styles.slaTime} ${styles[`slaTime-${urgencia}`]}`}>
           Expirado
         </p>
       ) : (
-        <p className={`${styles.slaTime} ${styles[`slaTime-${urgency}`]}`} aria-live="polite" aria-atomic="true">
-          {pad(hours)}h {pad(minutes)}m{' '}
-          <span className={styles.slaSeconds}>{pad(seconds)}s</span>
+        <p className={`${styles.slaTime} ${styles[`slaTime-${urgencia}`]}`} aria-live="polite" aria-atomic="true">
+          {formatarNumero(horas)}h {formatarNumero(minutos)}m{' '}
+          <span className={styles.slaSeconds}>{formatarNumero(segundos)}s</span>
         </p>
       )}
 
-      {/* SLA type label — shown only when provided */}
       {slaTipo && (
         <span className={styles.slaTypeLabel} title={slaTipo}>
           {slaTipo}
         </span>
       )}
 
-      {/* Contextual urgency hint */}
-      <p className={`${styles.slaHint} ${styles[`slaHint-${urgency}`]}`}>
-        {urgency === 'ok'       && 'Dentro do prazo'}
-        {urgency === 'warning'  && '⚠ Atenção — menos de 1 hora'}
-        {urgency === 'critical' && (expired ? '✕ SLA expirado' : '⚠ Crítico — menos de 15 minutos')}
+      <p className={`${styles.slaHint} ${styles[`slaHint-${urgencia}`]}`}>
+        {urgencia === 'ok'       && 'Dentro do prazo'}
+        {urgencia === 'warning'  && '⚠ Atenção — menos de 1 hora'}
+        {urgencia === 'critical' && (expirado ? '✕ SLA expirado' : '⚠ Crítico — menos de 15 minutos')}
       </p>
     </div>
   );
 }
 
-/* ── Timeline item ───────────────────────────────────────── */
-function TimelineItem({ event, isLast }) {
+function TimelineItem({ event, ehUltimo }) {
   return (
-    <li className={`${styles.timelineItem} ${isLast ? styles.timelineItemLast : ''}`}>
-      {/* Icon column */}
+    <li className={`${styles.timelineItem} ${ehUltimo ? styles.timelineItemLast : ''}`}>
       <div className={styles.timelineIconWrap} aria-hidden="true">
         <span className={`${styles.timelineIconCircle} ${styles[`tIcon-${event.type}`]}`}>
           <TimelineIcon type={event.type} />
         </span>
-        {!isLast && <span className={styles.timelineConnector} />}
+        {!ehUltimo && <span className={styles.timelineConnector} />}
       </div>
 
-      {/* Content column */}
       <div className={styles.timelineContent}>
         <div className={styles.timelineHeader}>
           <span className={styles.timelineTitle}>{event.title}</span>
@@ -240,7 +205,6 @@ function TimelineItem({ event, isLast }) {
           </time>
         </div>
 
-        {/* Status arrow tags */}
         {event.tags.length > 0 && (
           <div className={styles.timelineTags}>
             {event.statusArrow && event.tags.length === 2 ? (
@@ -257,12 +221,10 @@ function TimelineItem({ event, isLast }) {
           </div>
         )}
 
-        {/* Inline note (for comments) */}
         {event.note && (
           <p className={styles.timelineNote}>{event.note}</p>
         )}
 
-        {/* Actor */}
         {event.actor && (
           <span className={styles.timelineActor}>{event.actor}</span>
         )}
@@ -271,61 +233,95 @@ function TimelineItem({ event, isLast }) {
   );
 }
 
-/* ── Comment bar ─────────────────────────────────────────── */
-function CommentBar() {
-  const [comment, setComment] = useState('');
+// Novo componente para a transferência de departamento
+function DepartmentTransferBar({ currentDepartment, onTransfer }) {
+  const [selectedDept, setSelectedDept] = useState(currentDepartment);
+  const options = ['Financeiro', 'Produto', 'Suporte N1', 'Infraestrutura'];
 
-  function handleSend() {
-    if (!comment.trim()) return;
-    // UI-only — wire to API later
-    setComment('');
+  function handleSave() {
+    if (selectedDept !== currentDepartment) {
+      onTransfer(selectedDept);
+    }
   }
 
   return (
     <div className={styles.commentBar}>
-      <input
-        className={styles.commentInput}
-        type="text"
-        placeholder="Adicionar comentário..."
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSend(); }}
-        aria-label="Adicionar comentário"
-      />
+      <span className={styles.metaIcon}>
+        <IconBuilding />
+      </span>
+      <select
+        className={styles.transferSelect}
+        value={selectedDept}
+        onChange={(e) => setSelectedDept(e.target.value)}
+        aria-label="Selecionar departamento"
+      >
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
       <button
         className={styles.sendBtn}
-        onClick={handleSend}
-        disabled={!comment.trim()}
-        aria-label="Enviar comentário"
+        onClick={handleSave}
+        disabled={selectedDept === currentDepartment}
+        aria-label="Salvar novo departamento"
       >
-        <span>Enviar</span>
-        <IconSend />
+        <span>Salvar</span>
       </button>
     </div>
   );
 }
 
-/* ── Internal Note ───────────────────────────────────────────
-   Amber-tinted card. Visible only to technicians — this is
-   enforced at the API level; the tint is a visual safeguard
-   so the technician never confuses this with a public reply.
-   ────────────────────────────────────────────────────────── */
-function InternalNote() {
-  const [note, setNote] = useState('');
-  const [saved, setSaved] = useState(false);
-  const MAX = 1000;
+// componente para a nova listagem de anexos
+function AttachmentsCard({ anexos }) {
+  if (!anexos || anexos.length === 0) return null;
 
-  function handleSave() {
-    if (!note.trim()) return;
-    // UI-only — wire to POST /api/tickets/:id/notes later
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-    setNote('');
+  return (
+    <div className={styles.card}>
+      <h2 className={styles.cardTitle}>Anexos</h2>
+      <ul className={styles.attachmentsList}>
+        {anexos.map((anexo, idx) => (
+          <li key={idx} className={styles.attachmentItem}>
+            <div className={styles.attachmentIconWrap}>
+              {anexo.type === 'PNG' || anexo.type === 'JPG' || anexo.type === 'JPEG' 
+                ? <IconFileImage /> 
+                : <IconFileText />}
+            </div>
+            <div className={styles.attachmentInfo}>
+              <span className={styles.attachmentName} title={anexo.name}>
+                {anexo.name}
+              </span>
+              <span className={styles.attachmentMeta}>
+                {anexo.size} • {anexo.type}
+              </span>
+            </div>
+            <button className={styles.downloadBtn} aria-label={`Baixar ${anexo.name}`}>
+              <IconDownload />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// segrega a interface pra garantir regras de compliance onde apenas a equipe tecnica le essa caixa
+function InternalNote() {
+  const [nota, setNota] = useState('');
+  const [salvo, setSalvo] = useState(false);
+  const LIMITE_CARACTERES = 1000;
+
+  function salvarNota() {
+    if (!nota.trim()) return;
+    
+    setSalvo(true);
+    setTimeout(() => setSalvo(false), 2500);
+    setNota('');
   }
 
   return (
     <div className={styles.noteCard}>
-      {/* Header */}
       <div className={styles.noteHeader}>
         <span className={styles.noteHeaderIcon}>
           <IconLock />
@@ -336,32 +332,30 @@ function InternalNote() {
         </div>
       </div>
 
-      {/* Textarea */}
       <div className={styles.noteTextareaWrap}>
         <textarea
           className={styles.noteTextarea}
           placeholder="Adicione uma nota interna sobre este chamado…"
-          value={note}
-          onChange={(e) => setNote(e.target.value.slice(0, MAX))}
+          value={nota}
+          onChange={(e) => setNota(e.target.value.slice(0, LIMITE_CARACTERES))}
           rows={5}
           aria-label="Nota interna"
         />
-        <span className={`${styles.noteCharCount} ${note.length >= MAX * 0.9 ? styles.noteCharCountWarn : ''}`}>
-          {note.length}/{MAX}
+        <span className={`${styles.noteCharCount} ${nota.length >= LIMITE_CARACTERES * 0.9 ? styles.noteCharCountWarn : ''}`}>
+          {nota.length}/{LIMITE_CARACTERES}
         </span>
       </div>
 
-      {/* Footer */}
       <div className={styles.noteFooter}>
-        {saved && (
+        {salvo && (
           <span className={styles.noteSavedFeedback} role="status" aria-live="polite">
             ✓ Nota salva
           </span>
         )}
         <button
           className={styles.noteSaveBtn}
-          onClick={handleSave}
-          disabled={!note.trim()}
+          onClick={salvarNota}
+          disabled={!nota.trim()}
           aria-label="Salvar nota interna"
         >
           Salvar Nota
@@ -371,27 +365,22 @@ function InternalNote() {
   );
 }
 
-/* ── Public Reply ─────────────────────────────────────────────
-   Standard white card. This textarea sends a visible reply
-   to the end user. Kept visually neutral (no amber) to
-   reinforce the contrast with the Internal Note above.
-   ────────────────────────────────────────────────────────── */
-function PublicReply() {
-  const [reply, setReply] = useState('');
-  const [sent, setSent]   = useState(false);
-  const MAX = 2000;
+// resposta publica padrao que vai pro email do usuario, agora recebendo prop functions
+function PublicReply({ onSendSolution, onAddAttachment }) {
+  const [resposta, setResposta] = useState('');
+  const [enviado, setEnviado]   = useState(false);
+  const LIMITE_CARACTERES = 2000;
 
-  function handleSend() {
-    if (!reply.trim()) return;
-    // UI-only — wire to POST /api/tickets/:id/replies later
-    setSent(true);
-    setTimeout(() => setSent(false), 2500);
-    setReply('');
+  function enviarResposta() {
+    if (!resposta.trim()) return;
+    
+    setEnviado(true);
+    setTimeout(() => setEnviado(false), 2500);
+    setResposta('');
   }
 
   return (
     <div className={styles.replyCard}>
-      {/* Header */}
       <div className={styles.replyHeader}>
         <span className={styles.replyHeaderIcon}>
           <IconGlobe />
@@ -402,75 +391,136 @@ function PublicReply() {
         </div>
       </div>
 
-      {/* Textarea */}
       <div className={styles.replyTextareaWrap}>
         <textarea
           className={styles.replyTextarea}
           placeholder="Escreva sua resposta ao usuário…"
-          value={reply}
-          onChange={(e) => setReply(e.target.value.slice(0, MAX))}
+          value={resposta}
+          onChange={(e) => setResposta(e.target.value.slice(0, LIMITE_CARACTERES))}
           rows={5}
           aria-label="Resposta ao usuário"
         />
-        <span className={`${styles.replyCharCount} ${reply.length >= MAX * 0.9 ? styles.replyCharCountWarn : ''}`}>
-          {reply.length}/{MAX}
+        <span className={`${styles.replyCharCount} ${resposta.length >= LIMITE_CARACTERES * 0.9 ? styles.replyCharCountWarn : ''}`}>
+          {resposta.length}/{LIMITE_CARACTERES}
         </span>
       </div>
 
-      {/* Footer */}
       <div className={styles.replyFooter}>
-        {sent && (
-          <span className={styles.replySentFeedback} role="status" aria-live="polite">
-            ✓ Resposta enviada
-          </span>
-        )}
-        <button
-          className={styles.replySendBtn}
-          onClick={handleSend}
-          disabled={!reply.trim()}
-          aria-label="Enviar resposta ao usuário"
+        <button 
+          className={styles.replyAttachBtn}
+          onClick={onAddAttachment}
+          aria-label="Adicionar anexo"
+          type="button"
         >
-          <IconSend />
-          Enviar Resposta
+          <IconClip />
+          Adicionar Anexo
         </button>
+
+        <div className={styles.replyFooterActions}>
+          {enviado && (
+            <span className={styles.replySentFeedback} role="status" aria-live="polite">
+              ✓ Resposta enviada
+            </span>
+          )}
+          <button
+            className={styles.replySendBtn}
+            onClick={enviarResposta}
+            disabled={!resposta.trim()}
+            aria-label="Enviar resposta ao usuário"
+          >
+            <IconSend />
+            Enviar Resposta
+          </button>
+          
+          <button
+            className={styles.replySolutionBtn}
+            onClick={onSendSolution}
+            aria-label="Enviar solução e resolver"
+            type="button"
+            disabled={!resposta.trim()}
+          >
+            <IconMail />
+            Enviar Solução
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PAGE
-   ══════════════════════════════════════════════════════════════ */
-export default function TicketDetails() {
+export default function TicketDetails({ user }) {
   const { id }   = useParams();
   const navigate = useNavigate();
 
-  /* Resolve ticket — in production swap for a real fetch/query */
-  const ticket = MOCK_TICKETS_DB[Number(id)] ?? FALLBACK_TICKET;
+  const chamado = MOCK_CHAMADOS_BD[Number(id)] ?? CHAMADO_FALLBACK;
+  
+  // Gerenciando estados locais pro mock da apresentação ficar reativo
+  const [currentStatus, setCurrentStatus] = useState(chamado.status);
+  const [currentHistory, setCurrentHistory] = useState(chamado.history);
+  const [currentDepartment, setCurrentDepartment] = useState(chamado.departamento);
 
-  /* Format protocol as '001/2026' */
-  const protocoloFormatado = `${String(ticket.protocolo).padStart(3, '0')}/${ticket.ano}`;
-
-  /* Format creation date */
-  const criadoEm = new Date(ticket.criadoEm).toLocaleString('pt-BR', {
+  const protocoloFormatado = `${String(chamado.protocolo).padStart(3, '0')}/${chamado.ano}`;
+  const criadoEm = new Date(chamado.criadoEm).toLocaleString('pt-BR', {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });
 
+  const handleSendSolution = () => {
+    setCurrentStatus('Resolvido');
+    
+    // Opcional: Adicionar um evento na timeline para a solução (ficar mais realista)
+    const newEvent = {
+      id: `h_sol_${Date.now()}`,
+      type: 'status',
+      title: 'Status alterado',
+      tags: ['em_analise', 'resolvido'],
+      actor: user?.email || 'Técnico',
+      timestamp: new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ''),
+      statusArrow: true,
+      note: 'Solução enviada aguardando validação do cliente.'
+    };
+    setCurrentHistory((prev) => [...prev, newEvent]);
+  };
+
+  const handleAddAttachment = () => {
+    const newEvent = {
+      id: `h_att_${Date.now()}`,
+      type: 'comment',
+      title: 'Anexo adicionado',
+      tags: [],
+      actor: user?.email || 'Técnico',
+      timestamp: new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ''),
+      note: 'Arquivo anexado: comprovante_ajuste.pdf (2.4 MB)'
+    };
+    setCurrentHistory((prev) => [...prev, newEvent]);
+  };
+
+  const handleTransferDepartment = (newDept) => {
+    const oldDept = currentDepartment;
+    setCurrentDepartment(newDept);
+    
+    const newEvent = {
+      id: `h_transf_${Date.now()}`,
+      type: 'status',
+      title: 'Departamento alterado',
+      tags: [],
+      actor: user?.email || 'Técnico',
+      timestamp: new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ''),
+      note: `Chamado transferido de ${oldDept} para ${newDept}.`
+    };
+    setCurrentHistory((prev) => [...prev, newEvent]);
+  };
+
   return (
     <div className={styles.layout}>
-      {/* ── Fixed sidebar ── */}
       <Sidebar
         activeItem="mine"
-        onNavigate={(page) => navigate(`/${page === 'tickets' ? 'tickets' : ''}`)}
-        userEmail="demo@demo.com.br"
+        onNavigate={(pagina) => navigate(`/${pagina === 'tickets' ? 'tickets' : ''}`)}
+        userEmail={user?.email || "demo@demo.com.br"}
         userRole="tech"
       />
 
-      {/* ── Scrollable main ── */}
       <div className={styles.main}>
-
-        {/* ── Page header bar ─────────────────────────────── */}
         <header className={styles.pageHeader}>
           <button
             className={styles.backBtn}
@@ -480,48 +530,45 @@ export default function TicketDetails() {
             <IconArrowLeft />
             Voltar para chamados
           </button>
-          <h1 className={styles.pageTitle}>{ticket.titulo}</h1>
+          <h1 className={styles.pageTitle}>{chamado.titulo}</h1>
         </header>
 
-        {/* ── 3-column grid ───────────────────────────────── */}
         <div className={styles.grid}>
-
-          {/* ══ COL 1 — Left: Communication inputs ══════════ */}
           <aside className={styles.colLeft} aria-label="Comunicação do ticket">
             <InternalNote />
-            <PublicReply />
+            <PublicReply 
+              onSendSolution={handleSendSolution}
+              onAddAttachment={handleAddAttachment}
+            />
           </aside>
 
-          {/* ══ COL 2 — Center: Timeline ═════════════════════ */}
           <section className={styles.colCenter} aria-label="Histórico de atividades">
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>Histórico de Atividades</h2>
 
               <ol className={styles.timeline}>
-                {ticket.history.map((event, i) => (
+                {currentHistory.map((evento, i) => (
                   <TimelineItem
-                    key={event.id}
-                    event={event}
-                    isLast={i === ticket.history.length - 1}
+                    key={evento.id}
+                    event={evento}
+                    ehUltimo={i === currentHistory.length - 1}
                   />
                 ))}
-                {ticket.history.length === 0 && (
+                {currentHistory.length === 0 && (
                   <li className={styles.emptyTimeline}>Nenhuma atividade registrada.</li>
                 )}
               </ol>
             </div>
 
-            {/* Comment input pinned below the timeline card */}
-            <CommentBar />
+            <DepartmentTransferBar 
+              currentDepartment={currentDepartment}
+              onTransfer={handleTransferDepartment}
+            />
           </section>
 
-          {/* ══ COL 3 — Right: Metadata + SLA ═══════════════ */}
           <aside className={styles.colRight} aria-label="Detalhes e SLA">
+            <SlaCard slaDeadline={chamado.slaDeadline} slaTipo={chamado.slaTipo} />
 
-            {/* SLA countdown */}
-            <SlaCard slaDeadline={ticket.slaDeadline} slaTipo={ticket.slaTipo} />
-
-            {/* Ticket metadata card */}
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>Informações</h2>
 
@@ -531,25 +578,26 @@ export default function TicketDetails() {
                 </MetaRow>
 
                 <MetaRow icon={<IconTag />} label="Prioridade">
-                  <PriorityBadge idCategoria={ticket.idCategoria} />
+                  <PriorityBadge idCategoria={chamado.idCategoria} />
                 </MetaRow>
 
                 <MetaRow icon={<IconClock />} label="Status">
-                  <StatusBadge status={ticket.status} size="sm" />
+                  {/* Status renderizado a partir do state local */}
+                  <StatusBadge status={currentStatus} size="sm" />
                 </MetaRow>
 
                 <div className={styles.metaDivider} aria-hidden="true" />
 
                 <MetaRow icon={<IconUser />} label="Solicitante">
-                  {ticket.solicitante}
+                  {chamado.solicitante}
                 </MetaRow>
 
                 <MetaRow icon={<IconUser />} label="Responsável">
-                  {ticket.responsavel}
+                  {chamado.responsavel}
                 </MetaRow>
 
                 <MetaRow icon={<IconBuilding />} label="Departamento">
-                  {ticket.departamento}
+                  {currentDepartment}
                 </MetaRow>
 
                 <div className={styles.metaDivider} aria-hidden="true" />
@@ -560,6 +608,7 @@ export default function TicketDetails() {
               </div>
             </div>
 
+            <AttachmentsCard anexos={chamado.anexos} />
           </aside>
         </div>
       </div>

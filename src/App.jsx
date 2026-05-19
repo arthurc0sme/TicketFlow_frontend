@@ -2,20 +2,20 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Tickets from "./pages/Tickets";
-import TicketDetails from "./pages/TicketDetails"; // <-- 1. Adicione esta linha no topo
+import TicketDetails from "./pages/TicketDetails";
 
 function App() {
   const {
-    isLoading,
-    isAuthenticated,
-    error,
+    isLoading: carregando,
+    isAuthenticated: autenticado,
+    error: erro,
     loginWithRedirect: login,
-    user,
+    user: usuario,
   } = useAuth0();
 
-  const signup = () => login({ authorizationParams: { screen_hint: "signup" } });
+  const registrar = () => login({ authorizationParams: { screen_hint: "signup" } });
 
-  if (isLoading) {
+  if (carregando) {
     return (
       <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg-app)' }}>
         <h2 style={{ color: 'var(--color-text-secondary)' }}>Carregando TicketFlow...</h2>
@@ -23,19 +23,17 @@ function App() {
     );
   }
 
-  if (error) {
-    return <div>Erro na autenticação: {error.message}</div>;
+  if (erro) {
+    return <div>Erro na autenticação: {erro.message}</div>;
   }
 
-  return isAuthenticated ? (
+  // envelopando as rotas da aplicacao pra garantir a seguranca via auth0
+  return autenticado ? (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard user={user} />} />
-        <Route path="/tickets" element={<Tickets user={user} />} />
-        
-        {/* <-- 2. Adicione a rota do TicketDetails aqui */}
-        <Route path="/ticket/:id" element={<TicketDetails user={user} />} /> 
-        
+        <Route path="/" element={<Dashboard user={usuario} />} />
+        <Route path="/tickets" element={<Tickets user={usuario} />} />
+        <Route path="/ticket/:id" element={<TicketDetails user={usuario} />} /> 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
@@ -67,7 +65,7 @@ function App() {
           Entrar no Sistema
         </button>
         <button 
-          onClick={signup}
+          onClick={registrar}
           style={{
             padding: '10px 24px',
             backgroundColor: 'var(--color-bg-card)',

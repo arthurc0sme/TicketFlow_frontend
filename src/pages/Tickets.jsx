@@ -15,10 +15,10 @@ const MOCK_TICKETS = [
     protocolo: 1,
     titulo: 'Erro no sistema de pagamento',
     descricao: 'Usuários relatando falha ao processar pagamentos via cartão de crédito. O erro ocorre após inserir os dados do cartão e clicar em finalizar compra.',
-    status: 'Criado',
+    status: 'Em análise',
     idCategoria: 1,
     tempoRestanteSLA: '2h atrás',
-    responsavel: 'Maria Silva',
+    responsavel: 'João Santos',
   },
   {
     id: 2,
@@ -78,7 +78,7 @@ const MOCK_TICKETS = [
     status: 'Em Análise',
     idCategoria: 1,
     tempoRestanteSLA: '1d atrás',
-    responsavel: 'Maria Silva',
+    responsavel: 'Arthur Cosme',
   },
   {
     id: 8,

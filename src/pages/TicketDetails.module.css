@@ -143,7 +143,7 @@
 /* SLA type label — e.g. 'TPR (Tempo de Primeira Resposta)'
    Sits between the countdown timer and the urgency hint.
    Pill shape keeps it visually grouped with the card without
-   competing with the large time display above it.           */
+   competing with the large time display above it.            */
 .slaTypeLabel {
   display: block;
   background-color: rgba(0, 0, 0, 0.05);
@@ -388,7 +388,7 @@
 }
 
 /* ══════════════════════════════════════════════════════════
-   COMMENT BAR
+   COMMENT BAR / DEPARTMENT TRANSFER BAR
    ══════════════════════════════════════════════════════════ */
 .commentBar {
   display: flex;
@@ -415,6 +415,20 @@
   color: var(--color-text-tertiary);
 }
 
+.transferSelect {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
 .sendBtn {
   display: inline-flex;
   align-items: center;
@@ -429,6 +443,7 @@
   background-color: var(--color-brand-primary);
   cursor: pointer;
   flex-shrink: 0;
+  white-space: nowrap; /* Evita quebra de linha no botão */
   transition: background-color var(--transition-fast), opacity var(--transition-fast);
 }
 
@@ -451,9 +466,6 @@
 
 /* ══════════════════════════════════════════════════════════
    INTERNAL NOTE CARD
-   Amber-tinted to signal "private / internal only".
-   Every colour here derives from status-medium (amber) so
-   it harmonises with the existing token palette.
    ══════════════════════════════════════════════════════════ */
 .noteCard {
   background-color: #fffbeb;                          /* warm off-white */
@@ -490,19 +502,18 @@
 .noteTitle {
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  color: #92400e;                   /* amber-900 — dark enough on yellow bg */
+  color: #92400e;                                   /* amber-900 */
   line-height: 1.2;
   margin: 0 0 2px;
 }
 
 .noteSubtitle {
   font-size: var(--text-xs);
-  color: #b45309;                   /* amber-700 */
+  color: #b45309;                                   /* amber-700 */
   font-weight: var(--weight-normal);
   margin: 0;
 }
 
-/* Textarea wrapper (positions the char counter) */
 .noteTextareaWrap {
   position: relative;
 }
@@ -518,7 +529,7 @@
   font-size: var(--text-sm);
   color: var(--color-text-primary);
   line-height: var(--leading-relaxed);
-  padding: var(--space-3) var(--space-3) var(--space-6);  /* bottom pad for char count */
+  padding: var(--space-3) var(--space-3) var(--space-6);
   outline: none;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   box-sizing: border-box;
@@ -534,7 +545,6 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-status-medium) 18%, transparent);
 }
 
-/* Char counter — bottom-right inside textarea wrap */
 .noteCharCount {
   position: absolute;
   bottom: var(--space-2);
@@ -551,7 +561,6 @@
   color: var(--color-status-high);
 }
 
-/* Footer */
 .noteFooter {
   display: flex;
   align-items: center;
@@ -576,6 +585,7 @@
   background-color: var(--color-status-medium-bg);
   border: 1.5px solid color-mix(in srgb, var(--color-status-medium) 45%, transparent);
   cursor: pointer;
+  white-space: nowrap; /* Evita quebra de linha */
   transition: background-color var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
 }
 
@@ -596,8 +606,6 @@
 
 /* ══════════════════════════════════════════════════════════
    PUBLIC REPLY CARD
-   Standard white — deliberately neutral to contrast with
-   the amber Internal Note above it.
    ══════════════════════════════════════════════════════════ */
 .replyCard {
   background-color: var(--color-bg-card);
@@ -612,7 +620,6 @@
   border-left: 4px solid var(--color-brand-primary);
 }
 
-/* Header row */
 .replyHeader {
   display: flex;
   align-items: flex-start;
@@ -646,7 +653,6 @@
   margin: 0;
 }
 
-/* Textarea wrapper */
 .replyTextareaWrap {
   position: relative;
 }
@@ -677,7 +683,6 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-primary) 15%, transparent);
 }
 
-/* Char counter */
 .replyCharCount {
   position: absolute;
   bottom: var(--space-2);
@@ -693,11 +698,18 @@
   opacity: 1;
 }
 
-/* Footer */
+/* Modificado para alinhar os botões verticalmente e ocupar 100% */
 .replyFooter {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.replyFooterActions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--space-3);
 }
 
@@ -705,11 +717,41 @@
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   color: var(--color-status-low);
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Botões com padding padronizado, alinhamento de texto e white-space ajustado */
+.replyAttachBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 34px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  white-space: nowrap;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.replyAttachBtn:hover {
+  background-color: var(--color-bg-app);
+  color: var(--color-text-primary);
+  border-color: color-mix(in srgb, var(--color-text-secondary) 20%, transparent);
 }
 
 .replySendBtn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   height: 34px;
   padding: 0 var(--space-4);
@@ -720,6 +762,9 @@
   color: #fff;
   background-color: var(--color-brand-primary);
   cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  width: 100%;
   transition: background-color var(--transition-fast), opacity var(--transition-fast);
 }
 
@@ -733,6 +778,128 @@
 }
 
 .replySendBtn:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+.replySolutionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 34px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: #fff;
+  background-color: var(--color-status-low); /* Cor de sucesso (Verde) */
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  width: 100%;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.replySolutionBtn:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--color-status-low) 85%, black);
+}
+
+.replySolutionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.replySolutionBtn:focus-visible {
+  outline: 2px solid var(--color-status-low);
+  outline-offset: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ATTACHMENTS CARD
+   ══════════════════════════════════════════════════════════ */
+.attachmentsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.attachmentItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-app);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.attachmentItem:hover {
+  border-color: var(--color-border);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.attachmentIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-brand-light);
+  color: var(--color-brand-primary);
+  flex-shrink: 0;
+}
+
+.attachmentInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; /* allows truncation */
+  gap: 2px;
+}
+
+.attachmentName {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attachmentMeta {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.downloadBtn:hover {
+  color: var(--color-brand-primary);
+  background-color: var(--color-brand-light);
+  border-color: color-mix(in srgb, var(--color-brand-primary) 20%, transparent);
+}
+
+.downloadBtn:focus-visible {
   outline: 2px solid var(--color-brand-primary);
   outline-offset: 2px;
 }
